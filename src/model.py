@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 class Covid_cnn(nn.Module):
-    def __init__(self, num_classes=2, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.model1 = nn.Sequential(
             # block 1
@@ -46,9 +46,9 @@ class Covid_cnn(nn.Module):
             nn.MaxPool2d(2),
             nn.Dropout(0.2),
 
-            # Flatten 和 Linear
             nn.Flatten(),
-            nn.Linear(256 * 7 * 7, num_classes)
+            nn.Linear(256 * 7 * 7, 1),
+            nn.Sigmoid()
         )
 
     def forward(self, x):
@@ -60,4 +60,6 @@ if __name__ == '__main__':
     input = torch.ones(1, 3, 224, 224).cuda()
     print(input.shape)
     output = covid_cnn(input)
-    print(output.shape)
+
+    print("Output shape:", output.shape)
+    print("Output value:", output)
