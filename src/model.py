@@ -35,7 +35,6 @@ class Covid_cnn(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(128),
             nn.MaxPool2d(2),
-            nn.Dropout(0.2),
 
             # block 5
             nn.Conv2d(128, 256, 3, 1, 1),  # 普通卷积
@@ -44,16 +43,15 @@ class Covid_cnn(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(256),
             nn.MaxPool2d(2),
-            nn.Dropout(0.2),
 
             nn.Flatten(),
+            nn.Dropout(0.5),
             nn.Linear(256 * 7 * 7, 1),
-            nn.Sigmoid()
         )
 
     def forward(self, x):
-        x = self.model1(x)
-        return x
+        x = self.model1(x).squeeze(1)
+        return x.view(-1, 1)
 
 if __name__ == '__main__':
     covid_cnn = Covid_cnn().cuda()
