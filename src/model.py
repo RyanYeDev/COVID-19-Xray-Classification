@@ -1,63 +1,23 @@
 import torch
 from torch import nn
 
-class Covid_cnn(nn.Module):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.model1 = nn.Sequential(
-            # block 1
-            nn.Conv2d(3, 16, 3, 1, 1),
-            nn.ReLU(),
-            nn.Conv2d(16, 16, 3, 1, 1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
 
-            # block 2
-            nn.Conv2d(16, 32, 3, 1, 1),
-            nn.ReLU(),
-            nn.Conv2d(32, 32, 3, 1, 1),
-            nn.ReLU(),
-            nn.BatchNorm2d(32),
-            nn.MaxPool2d(2),
-
-            # block 3
+class CovidCNN(nn.Module):
+    def __init__(self, num_classes=3):
+        super().__init__()
+        self.model = nn.Sequential(
+            nn.Conv2d(1, 32, 3, 1, 1),
             nn.Conv2d(32, 64, 3, 1, 1),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, 3, 1, 1),
-            nn.ReLU(),
-            nn.BatchNorm2d(64),
-            nn.MaxPool2d(2),
-
-            # block 4
             nn.Conv2d(64, 128, 3, 1, 1),
-            nn.ReLU(),
-            nn.Conv2d(128, 128, 3, 1, 1),
-            nn.ReLU(),
-            nn.BatchNorm2d(128),
-            nn.MaxPool2d(2),
 
-            # block 5
-            nn.Conv2d(128, 256, 3, 1, 1),  # 普通卷积
-            nn.ReLU(),
-            nn.Conv2d(256, 256, 3, 1, 1),  # 普通卷积
-            nn.ReLU(),
-            nn.BatchNorm2d(256),
-            nn.MaxPool2d(2),
-
-            nn.Flatten(),
-            nn.Dropout(0.5),
-            nn.Linear(256 * 7 * 7, 1),
+            nn.MaxPool2d(2, 2),
+            nn.Linear(128 * 28 * 28, 256),
+        nn.Linear(256, num_classes),
         )
-
     def forward(self, x):
-        x = self.model1(x).squeeze(1)
-        return x.view(-1, 1)
+        x = self.model(x)
+        return x
 
 if __name__ == '__main__':
-    covid_cnn = Covid_cnn().cuda()
-    input = torch.ones(1, 3, 224, 224).cuda()
-    print(input.shape)
-    output = covid_cnn(input)
-
-    print("Output shape:", output.shape)
-    print("Output value:", output)
+    model = CovidCNN(num_classes=3)
+print(model)
